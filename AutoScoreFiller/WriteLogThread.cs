@@ -5,86 +5,68 @@ using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace AutoScoreFiller
-{
+namespace AutoScoreFiller {
     public delegate void EmitCustomizedMessage(string msg);
-    public class WriteLogThread
-    {
+    public class WriteLogThread {
         private Thread thread = null;
         private const int size = 128;
         private static List<string> msglist = new List<string>();
         private static StreamWriter sw = new StreamWriter(@"./appstatus.log", true);
         public static event EmitCustomizedMessage EmitMessage;
 
-        public WriteLogThread()
-        {
+        public WriteLogThread() {
             thread = new Thread(new ThreadStart(Run));
             thread.IsBackground = true;
         }
 
-        private static void Run()
-        {
+        private static void Run() {
             bool fatal = false;
-            while (true)
-            {
-                try
-                {
+            while (true) {
+                try {
                     Monitor.Enter(msglist);
-                    if (msglist.Count > 0)
-                    {
+                    if (msglist.Count > 0) {
                         sw.WriteLine(msglist[0]);
                         sw.Flush();
                         msglist.RemoveAt(0);
                     }
                     Thread.Sleep(500);
-                    
+
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     fatal = true;
                     EmitMessage("程序运行中遇到严重错误，状态记录线程将停止运行\n" + ex.Message);
                 }
-                finally
-                {
+                finally {
                     Monitor.Exit(msglist);
                 }
-                if (fatal)
-                {
+                if (fatal) {
                     //break;
                 }
             }
         }
 
-        public void Append(string msg, bool timestamp = true)
-        {
-            try
-            {
+        public void Append(string msg, bool timestamp = true) {
+            try {
                 Monitor.Enter(msglist);
-                if (msglist.Count <= size)
-                {
-                    if (timestamp)
-                    {
+                if (msglist.Count <= size) {
+                    if (timestamp) {
                         string tmstp = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss.fff");
                         msglist.Add(tmstp + " " + msg);
                     }
-                    else
-                    {
+                    else {
                         msglist.Add(msg);
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 EmitMessage("添加程序运行日志时发生错误\n" + ex.Message);
             }
-            finally
-            {
+            finally {
                 Monitor.Exit(msglist);
             }
         }
 
-        public void Start()
-        {
+        public void Start() {
             thread.Start();
         }
     }
