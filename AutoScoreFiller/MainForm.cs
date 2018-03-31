@@ -27,6 +27,7 @@ namespace AutoScoreFiller {
         private XmlElement root = null;     // 配置文件的根节点
         private string tablename = null;    // 待查找表格的name属性的值
         private List<string> classnames;    // 配置文件中会指定具有哪些class属性的input元素在导入数据时被忽略
+        private int log = 0;
 
         public MainForm() {
             InitializeComponent();
@@ -35,13 +36,15 @@ namespace AutoScoreFiller {
                 xmldoc = new XmlDocument();
                 msgbox = new MessageForm(this);
                 aboutform = new AboutForm(this);
-                thr = new WriteLogThread();
-                WriteLogThread.EmitMessage += new EmitCustomizedMessage(ReceiveMessage);
-                thr.Start();
                 ParseConfigXml();
+                if (this.log != 0) {
+                    thr = new WriteLogThread();
+                    //WriteLogThread.EmitMessage += new EmitCustomizedMessage(ReceiveMessage);
+                    thr.Start();
+                }
             }
             catch (Exception ex) {
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
                 msgbox.ShowMessageDialog("程序启动错误\n" + ex.Message, "警告");
             }
         }
@@ -85,6 +88,9 @@ namespace AutoScoreFiller {
                     }
                 }
             }
+
+            XmlNode log = root.SelectSingleNode("log");
+            this.log = int.Parse(log.InnerText);
         }
 
         private void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
@@ -101,7 +107,7 @@ namespace AutoScoreFiller {
             }
             catch (System.Exception ex) {
                 this.msgbox.ShowMessageDialog("加载网页时发生错误", "错误");
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
@@ -124,7 +130,7 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
@@ -208,7 +214,7 @@ namespace AutoScoreFiller {
                     }
                 }
                 catch (System.Exception ex) {
-                    //thr.Append(ex.StackTrace);
+                    if (thr != null) thr.Append(ex.StackTrace);
                 }
             }
         }
@@ -239,7 +245,7 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
@@ -258,62 +264,7 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                thr.Append(ex.StackTrace);
-            }
-        }
-
-        private void findTable() {
-            try {
-                if (this.lvi != null) {
-                    HtmlElement he = this.webBrowser.Document.GetElementById(this.lvi.SubItems[0].Text);
-                    if (he != null) {
-                        he.Style = "background-color : none";
-                    }
-                    this.lvi = null;
-                }
-
-                HtmlElementCollection hec = this.webBrowser.Document.GetElementsByTagName("table");
-                ListViewItem lvimark = null;
-                int maxcols = 0;
-
-                for (int i = 0; hec != null && i < hec.Count; i++) {
-                    if (hec[i].Id == null || hec[i].Id.Trim() == "") {
-                        continue;
-                    }
-                    ListViewItem lvi = new ListViewItem();
-                    lvi.Text = hec[i].Id;
-                    int rows = 0;
-                    int cols = 0;
-                    HtmlElementCollection trs = hec[i].GetElementsByTagName("tr");
-                    for (int j = 0; j < trs.Count; j++) {
-                        if (trs[j].Parent.Parent.Equals(hec[i])) {
-                            rows++;
-                            HtmlElementCollection tds = trs[j].GetElementsByTagName("td");
-                            for (int k = 0; k < tds.Count; k++) {
-                                if (tds[k].Parent.Equals(trs[j])) {
-                                    cols++;
-                                }
-                            }
-                        }
-                    }
-
-                    if (cols > maxcols) {
-                        maxcols = cols;
-                        lvimark = lvi;
-                    }
-                    if (rows != 0) {
-                        cols /= rows;
-                    }
-
-                    lvi.SubItems.Add(rows + " * " + cols);
-                }
-
-                if (lvimark != null) {
-                    lvimark.Selected = true;
-                }
-            }
-            catch (System.Exception ex) {
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
@@ -323,9 +274,11 @@ namespace AutoScoreFiller {
 
         private void MenuItemImportFromExcel_Click(object sender, EventArgs e) {
             try {
+                HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
+
                 OpenFileDialog ofdlg = new OpenFileDialog();
                 ofdlg.InitialDirectory = this.initdir;
-                ofdlg.Filter = "csv file(*.csv)|";
+                ofdlg.Filter = "csv file|*.csv";
                 ofdlg.RestoreDirectory = false;
                 ofdlg.FilterIndex = 1;
                 ofdlg.Title = "打开数据源";
@@ -361,7 +314,6 @@ namespace AutoScoreFiller {
 
                 object[] args = new object[1];
 
-                HtmlElement table = this.webBrowser.Document.GetElementById(this.lvi.SubItems[0].Text);
                 HtmlElementCollection trs = table.GetElementsByTagName("tr");
                 CsvStreamReader csr = new CsvStreamReader(filename);
 
@@ -430,20 +382,17 @@ namespace AutoScoreFiller {
             }
             catch (System.Exception ex) {
                 this.msgbox.ShowMessageDialog("导入数据失败", "错误");
-                thr.Append(ex.StackTrace);
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
         private void MenuItemExportToExcel_Click(object sender, EventArgs e) {
             try {
-                if (this.lvi == null || this.lvi.SubItems[0].Text.Trim() == "") {
-                    this.msgbox.ShowMessageDialog("请选择要导出数据的表格", "错误");
-                    return;
-                }
+                HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
 
                 SaveFileDialog dlg = new SaveFileDialog();
                 dlg.InitialDirectory = this.initdir;
-                dlg.Filter = "csv file(*.csv)|";
+                dlg.Filter = "csv file|*.csv";
                 dlg.RestoreDirectory = false;
                 dlg.FilterIndex = 1;
                 dlg.Title = "导出表格数据";
@@ -480,7 +429,6 @@ namespace AutoScoreFiller {
                     this.webBrowser.Document.Body.AppendChild(script);
                 }
 
-                HtmlElement table = this.webBrowser.Document.GetElementById(this.lvi.SubItems[0].Text);
                 HtmlElementCollection trs = table.GetElementsByTagName("tr");
 
                 CsvStreamReader csv = new CsvStreamReader();
@@ -562,8 +510,8 @@ namespace AutoScoreFiller {
                 csv.CloseCsvFile();
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("导出CSV文件失败", "错误");
-                thr.Append(ex.StackTrace);
+                this.msgbox.ShowMessageDialog("导出Excel文件失败", "错误");
+                if (thr != null) thr.Append(ex.StackTrace);
             }
         }
     }

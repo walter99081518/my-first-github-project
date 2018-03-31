@@ -51,7 +51,6 @@
             // 
             // webBrowser
             // 
-            this.webBrowser.AllowWebBrowserDrop = false;
             this.tableLayoutPanel1.SetColumnSpan(this.webBrowser, 2);
             this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webBrowser.IsWebBrowserContextMenuEnabled = false;

@@ -1,0 +1,19 @@
+<config>
+  <table>DataGrid1</table>
+  <skip>
+    <classname>textvisible</classname>
+    <classname>textinvisible</classname>
+    <classname>textconcealed</classname>
+  </skip>
+  <favorites>
+    <url>D:/project20161102/score.html</url>
+    <url>http://172.16.60.40</url>
+    <url>D:/project20161102/计算机应用基础.htm</url>
+    <url>D:/project20170122/计算机应用基础.htm</url>
+    <url>D:/project20170122/score.html</url>
+    <url>D:/project20170124/score.html</url>
+    <url>
+    </url>
+    <url>www.sohu.com</url>
+  </favorites>
+</config>
