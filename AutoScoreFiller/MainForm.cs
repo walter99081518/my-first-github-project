@@ -395,7 +395,7 @@ namespace AutoScoreFiller {
                 dlg.Filter = "csv file|*.csv";
                 dlg.RestoreDirectory = false;
                 dlg.FilterIndex = 1;
-                dlg.Title = "导出表格数据";
+                dlg.Title = "导出网页数据";
                 if (dlg.ShowDialog() != DialogResult.OK) {
                     return;
                 }
