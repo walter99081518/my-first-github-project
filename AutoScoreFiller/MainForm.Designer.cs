@@ -59,7 +59,7 @@
             this.webBrowser.MinimumSize = new System.Drawing.Size(23, 28);
             this.webBrowser.Name = "webBrowser";
             this.webBrowser.ScriptErrorsSuppressed = true;
-            this.webBrowser.Size = new System.Drawing.Size(1266, 626);
+            this.webBrowser.Size = new System.Drawing.Size(1266, 623);
             this.webBrowser.TabIndex = 0;
             this.webBrowser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser_DocumentCompleted);
             this.webBrowser.NewWindow += new System.ComponentModel.CancelEventHandler(this.webBrowser_NewWindow);
@@ -74,13 +74,13 @@
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 25);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1272, 668);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1272, 665);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // tableLayoutPanel2
@@ -104,7 +104,7 @@
             this.cmbUrl.FormattingEnabled = true;
             this.cmbUrl.Location = new System.Drawing.Point(3, 3);
             this.cmbUrl.Name = "cmbUrl";
-            this.cmbUrl.Size = new System.Drawing.Size(1060, 25);
+            this.cmbUrl.Size = new System.Drawing.Size(1060, 28);
             this.cmbUrl.TabIndex = 4;
             this.cmbUrl.SelectedIndexChanged += new System.EventHandler(this.cmbUrl_SelectedIndexChanged);
             this.cmbUrl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cmbUrl_KeyPress);
@@ -168,7 +168,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1272, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1272, 28);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -181,7 +181,7 @@
             this.MenuItemAbout});
             this.MenuItemTool.Font = new System.Drawing.Font("Microsoft YaHei", 9F);
             this.MenuItemTool.Name = "MenuItemTool";
-            this.MenuItemTool.Size = new System.Drawing.Size(44, 21);
+            this.MenuItemTool.Size = new System.Drawing.Size(51, 24);
             this.MenuItemTool.Text = "工具";
             this.MenuItemTool.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -189,7 +189,7 @@
             // 
             this.MenuItemImportFromExcel.Name = "MenuItemImportFromExcel";
             this.MenuItemImportFromExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.MenuItemImportFromExcel.Size = new System.Drawing.Size(269, 22);
+            this.MenuItemImportFromExcel.Size = new System.Drawing.Size(325, 26);
             this.MenuItemImportFromExcel.Text = "从Excel文件导入数据到网页";
             this.MenuItemImportFromExcel.Click += new System.EventHandler(this.MenuItemImportFromExcel_Click);
             // 
@@ -197,25 +197,25 @@
             // 
             this.MenuItemExportToExcel.Name = "MenuItemExportToExcel";
             this.MenuItemExportToExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.MenuItemExportToExcel.Size = new System.Drawing.Size(269, 22);
+            this.MenuItemExportToExcel.Size = new System.Drawing.Size(325, 26);
             this.MenuItemExportToExcel.Text = "将网页数据导出到Excel文件";
             this.MenuItemExportToExcel.Click += new System.EventHandler(this.MenuItemExportToExcel_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(266, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(322, 6);
             // 
             // MenuItemAbout
             // 
             this.MenuItemAbout.Name = "MenuItemAbout";
-            this.MenuItemAbout.Size = new System.Drawing.Size(269, 22);
+            this.MenuItemAbout.Size = new System.Drawing.Size(325, 26);
             this.MenuItemAbout.Text = "关于";
             this.MenuItemAbout.Click += new System.EventHandler(this.MenuItemAbout_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1272, 693);
             this.Controls.Add(this.tableLayoutPanel1);

@@ -318,17 +318,16 @@ namespace AutoScoreFiller {
                 CsvStreamReader csr = new CsvStreamReader(filename);
 
                 for (int i = 0, m = 0; i < trs.Count && m < csr.RowCount; i++) {
-                    if (!trs[i].Parent.Parent.Equals(table)) {
+                    if (!trs[i].Parent.Parent.Equals(table)) { // trs[i].Parent.TagName == "TBODY";
                         continue;
                     }
                     HtmlElementCollection tds = trs[i].GetElementsByTagName("td");
-                    if (tds == null || tds.Count == 0) {
-                        continue;
-                    }
-                    ++m;
                     for (int j = 0, n = 0; j < tds.Count && n < csr.ColCount; j++) {
                         HtmlElementCollection hec = tds[j].Children;
-                        for (int k = 0; hec != null && k < hec.Count; k++) {
+                        if (hec == null) {
+                            continue;
+                        }
+                        for (int k = 0; k < hec.Count; k++) {
                             // Only input, select and textarea can be filled with value.
                             string tagname = hec[k].TagName.ToLower();
                             if (tagname != "input" && tagname != "select" && tagname != "textarea") {
@@ -349,10 +348,7 @@ namespace AutoScoreFiller {
                             args[0] = id;
                             hec[k].SetAttribute("id", id);
                             object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
-                            if (jsret == null) {
-                                continue;
-                            }
-                            else if (jsret.ToString().ToLower() == "false") {
+                            if (jsret == null || jsret.ToString().ToLower() == "false") {
                                 continue;
                             }
                             // Elements must be editable.
@@ -377,6 +373,7 @@ namespace AutoScoreFiller {
                             }
                         }
                     }
+                    ++m;
                 }
                 //csr.WriteTextFile("d:/debug.txt", this.webBrowser.Document.Body.InnerHtml);
             }
