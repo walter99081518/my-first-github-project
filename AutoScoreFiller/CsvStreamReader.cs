@@ -8,8 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace AutoScoreFiller
-{
+namespace AutoScoreFiller {
     #region 类说明信息
     //<summary>
     //<DL>
@@ -25,16 +24,14 @@ namespace AutoScoreFiller
     //<Version>1.0</Version>
     //</summary>
     #endregion
-    public class CsvStreamReader
-    {
+    public class CsvStreamReader {
         private ArrayList rowAL;         //行链表，CSV文件的每一行就是一个链
         private string fileName;         //文件名
         private Encoding encoding;       //编码
         private FileStream fs = null;
         private StreamWriter sw = null;
 
-        public CsvStreamReader()
-        {
+        public CsvStreamReader() {
             this.rowAL = new ArrayList();
             this.fileName = "";
             this.encoding = Encoding.Default;
@@ -44,8 +41,7 @@ namespace AutoScoreFiller
         ///
         /// </summary>
         /// <param name="fileName">文件名，包括文件路径</param>
-        public CsvStreamReader(string fileName)
-        {
+        public CsvStreamReader(string fileName) {
             this.rowAL = new ArrayList();
             this.fileName = fileName;
             this.encoding = Encoding.Default;
@@ -57,8 +53,7 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="fileName">文件名，包括文件路径</param>
         /// <param name="encoding">文件编码</param>
-        public CsvStreamReader(string fileName, Encoding encoding)
-        {
+        public CsvStreamReader(string fileName, Encoding encoding) {
             this.rowAL = new ArrayList();
             this.fileName = fileName;
             this.encoding = encoding;
@@ -68,10 +63,8 @@ namespace AutoScoreFiller
         /// <summary>
         /// 文件名，包括文件路径
         /// </summary>
-        public string FileName
-        {
-            set
-            {
+        public string FileName {
+            set {
                 this.fileName = value;
                 LoadCsvFile();
             }
@@ -81,10 +74,8 @@ namespace AutoScoreFiller
         /// 文件编码
         /// </summary>
 
-        public Encoding FileEncoding
-        {
-            set
-            {
+        public Encoding FileEncoding {
+            set {
                 this.encoding = value;
             }
         }
@@ -92,10 +83,8 @@ namespace AutoScoreFiller
         /// <summary>
         /// 获取行数
         /// </summary>
-        public int RowCount
-        {
-            get
-            {
+        public int RowCount {
+            get {
                 return this.rowAL.Count;
             }
         }
@@ -103,14 +92,11 @@ namespace AutoScoreFiller
         /// <summary>
         /// 获取列数
         /// </summary>
-        public int ColCount
-        {
-            get
-            {
+        public int ColCount {
+            get {
                 int maxCol;
                 maxCol = 0;
-                for (int i = 0; i < this.rowAL.Count; i++)
-                {
+                for (int i = 0; i < this.rowAL.Count; i++) {
                     ArrayList colAL = (ArrayList)this.rowAL[i];
                     maxCol = (maxCol > colAL.Count) ? maxCol : colAL.Count;
                 }
@@ -123,17 +109,14 @@ namespace AutoScoreFiller
         /// row:行，row = 1代表第一行
         /// col:列，col = 1代表第一列
         /// </summary>
-        public string this[int row, int col]
-        {
-            get
-            {
+        public string this[int row, int col] {
+            get {
                 //数据有效性验证
                 CheckRowValid(row);
                 CheckColValid(col);
                 ArrayList colAL = (ArrayList)this.rowAL[row - 1];
                 //如果请求列数据大于当前行的列时，返回空值
-                if (colAL.Count < col)
-                {
+                if (colAL.Count < col) {
                     return "";
                 }
                 return colAL[col - 1].ToString();
@@ -147,29 +130,23 @@ namespace AutoScoreFiller
         /// maxrow: -1代表最大行
         /// maxcol: -1代表最大列
         /// </summary>
-        public DataTable this[int minRow, int maxRow, int minCol, int maxCol]
-        {
-            get
-            {
+        public DataTable this[int minRow, int maxRow, int minCol, int maxCol] {
+            get {
                 //数据有效性验证
                 CheckRowValid(minRow);
                 CheckMaxRowValid(maxRow);
                 CheckColValid(minCol);
                 CheckMaxColValid(maxCol);
-                if (maxRow == -1)
-                {
+                if (maxRow == -1) {
                     maxRow = RowCount;
                 }
-                if (maxCol == -1)
-                {
+                if (maxCol == -1) {
                     maxCol = ColCount;
                 }
-                if (maxRow < minRow)
-                {
+                if (maxRow < minRow) {
                     throw new Exception("最大行数不能小于最小行数");
                 }
-                if (maxCol < minCol)
-                {
+                if (maxCol < minCol) {
                     throw new Exception("最大列数不能小于最小列数");
                 }
                 DataTable csvDT = new DataTable();
@@ -178,16 +155,13 @@ namespace AutoScoreFiller
                 int row;
 
                 //增加列
-                for (i = minCol; i <= maxCol; i++)
-                {
+                for (i = minCol; i <= maxCol; i++) {
                     csvDT.Columns.Add(i.ToString());
                 }
-                for (row = minRow; row <= maxRow; row++)
-                {
+                for (row = minRow; row <= maxRow; row++) {
                     DataRow csvDR = csvDT.NewRow();
                     i = 0;
-                    for (col = minCol; col <= maxCol; col++)
-                    {
+                    for (col = minCol; col <= maxCol; col++) {
                         csvDR[i] = this[row, col];
                         i++;
                     }
@@ -201,14 +175,11 @@ namespace AutoScoreFiller
         /// 检查行数是否是有效的
         /// </summary>
         /// <param name="col"></param>
-        private void CheckRowValid(int row)
-        {
-            if (row <= 0)
-            {
+        private void CheckRowValid(int row) {
+            if (row <= 0) {
                 throw new Exception("行数不能小于0");
             }
-            if (row > RowCount)
-            {
+            if (row > RowCount) {
                 throw new Exception("没有当前行的数据");
             }
         }
@@ -217,14 +188,11 @@ namespace AutoScoreFiller
         /// 检查最大行数是否是有效的
         /// </summary>
         /// <param name="col"></param>
-        private void CheckMaxRowValid(int maxRow)
-        {
-            if (maxRow <= 0 && maxRow != -1)
-            {
+        private void CheckMaxRowValid(int maxRow) {
+            if (maxRow <= 0 && maxRow != -1) {
                 throw new Exception("行数不能等于0或小于-1");
             }
-            if (maxRow > RowCount)
-            {
+            if (maxRow > RowCount) {
                 throw new Exception("没有当前行的数据");
             }
         }
@@ -233,14 +201,11 @@ namespace AutoScoreFiller
         /// 检查列数是否是有效的
         /// </summary>
         /// <param name="col"></param>
-        private void CheckColValid(int col)
-        {
-            if (col <= 0)
-            {
+        private void CheckColValid(int col) {
+            if (col <= 0) {
                 throw new Exception("列数不能小于0");
             }
-            if (col > ColCount)
-            {
+            if (col > ColCount) {
                 throw new Exception("没有当前列的数据");
             }
         }
@@ -249,14 +214,11 @@ namespace AutoScoreFiller
         /// 检查检查最大列数是否是有效的
         /// </summary>
         /// <param name="col"></param>
-        private void CheckMaxColValid(int maxCol)
-        {
-            if (maxCol <= 0 && maxCol != -1)
-            {
+        private void CheckMaxColValid(int maxCol) {
+            if (maxCol <= 0 && maxCol != -1) {
                 throw new Exception("列数不能等于0或小于-1");
             }
-            if (maxCol > ColCount)
-            {
+            if (maxCol > ColCount) {
                 throw new Exception("没有当前列的数据");
             }
         }
@@ -264,23 +226,18 @@ namespace AutoScoreFiller
         /// <summary>
         /// 载入CSV文件
         /// </summary>
-        private void LoadCsvFile()
-        {
+        private void LoadCsvFile() {
             //对数据的有效性进行验证
-            if (this.fileName == null)
-            {
+            if (this.fileName == null) {
                 throw new Exception("请指定要载入的CSV文件名");
             }
-            else if (!File.Exists(this.fileName))
-            {
+            else if (!File.Exists(this.fileName)) {
                 throw new Exception("指定的CSV文件不存在");
             }
-            else
-            {
+            else {
 
             }
-            if (this.encoding == null)
-            {
+            if (this.encoding == null) {
                 this.encoding = Encoding.Default;
             }
 
@@ -288,72 +245,54 @@ namespace AutoScoreFiller
             string csvDataLine;
 
             csvDataLine = "";
-            while (true)
-            {
+            while (true) {
                 string fileDataLine;
 
                 fileDataLine = sr.ReadLine();
-                if (fileDataLine == null)
-                {
+                if (fileDataLine == null) {
                     break;
                 }
-                if (csvDataLine == "")
-                {
+                if (csvDataLine == "") {
                     csvDataLine = fileDataLine;//GetDeleteQuotaDataLine(fileDataLine);
                 }
-                else
-                {
+                else {
                     csvDataLine += "/r/n" + fileDataLine;//GetDeleteQuotaDataLine(fileDataLine);
                 }
                 //如果包含偶数个引号，说明该行数据中出现回车符或包含逗号
-                if (!IfOddQuota(csvDataLine))
-                {
+                if (!IfOddQuota(csvDataLine)) {
                     AddNewDataLine(csvDataLine);
                     csvDataLine = "";
                 }
             }
             sr.Close();
             //数据行出现奇数个引号
-            if (csvDataLine.Length > 0)
-            {
+            if (csvDataLine.Length > 0) {
                 throw new Exception("CSV文件的格式有错误");
             }
         }
 
-        public void OpenCsvFile(string filename)
-        {
+        public void OpenCsvFile(string filename) {
             this.fs = new FileStream(filename, FileMode.Create);
             this.sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
         }
 
-        public void WriteCsvFile(LinkedList<string> ls)
-        {
-            if (this.fs != null && this.sw != null)
-            {
+        public void WriteCsvFile(LinkedList<string> ls) {
+            if (this.fs != null && this.sw != null) {
                 LinkedListNode<string> node = ls.First;
-                while (node != null)
-                {
-                    string text = Regex.Replace(node.Value, "(^\"[^\"])", "\"$0");
-                    text = Regex.Replace(text, "([^\"]\"$)", "$0\"");
-                    while (Regex.IsMatch(text, "([^\"])\"([^\"])"))
-                    {
-                        text = Regex.Replace(text, "([^\"])\"([^\"])", "$1\"\"$2");
-                    }
-                    text = "\"" + text + "\t\"";
-                    node.Value = text;
+                while (node != null) {
+                    node.Value = node.Value.Replace("\"", "\"\"");
+                    node.Value = "\"" + node.Value + "\"";
                     node = node.Next;
                 }
-                
+
                 string line = string.Join(",", ls.ToArray()) + "\n";
                 sw.Write(line);
                 sw.Flush();
             }
         }
 
-        public void CloseCsvFile()
-        {
-            if (this.fs != null && this.sw != null)
-            {
+        public void CloseCsvFile() {
+            if (this.fs != null && this.sw != null) {
                 this.sw.Close();
                 this.fs.Close();
                 this.sw = null;
@@ -361,8 +300,7 @@ namespace AutoScoreFiller
             }
         }
 
-        public void WriteTextFile(string filename, string text)
-        {
+        public void WriteTextFile(string filename, string text) {
             FileStream fs = new FileStream(filename, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
             sw.Write(text);
@@ -376,8 +314,7 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="fileDataLine">文件数据行</param>
         /// <returns></returns>
-        private string GetDeleteQuotaDataLine(string fileDataLine)
-        {
+        private string GetDeleteQuotaDataLine(string fileDataLine) {
             return fileDataLine.Replace("\"\"", "\"");
         }
 
@@ -386,23 +323,19 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="dataLine">数据行</param>
         /// <returns>为奇数时，返回为真；否则返回为假</returns>
-        private bool IfOddQuota(string dataLine)
-        {
+        private bool IfOddQuota(string dataLine) {
             int quotaCount;
             bool oddQuota;
 
             quotaCount = 0;
-            for (int i = 0; i < dataLine.Length; i++)
-            {
-                if (dataLine[i] == '\"')
-                {
+            for (int i = 0; i < dataLine.Length; i++) {
+                if (dataLine[i] == '\"') {
                     quotaCount++;
                 }
             }
 
             oddQuota = false;
-            if (quotaCount % 2 == 1)
-            {
+            if (quotaCount % 2 == 1) {
                 oddQuota = true;
             }
 
@@ -414,27 +347,22 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="dataCell"></param>
         /// <returns></returns>
-        private bool IfOddStartQuota(string dataCell)
-        {
+        private bool IfOddStartQuota(string dataCell) {
             int quotaCount;
             bool oddQuota;
 
             quotaCount = 0;
-            for (int i = 0; i < dataCell.Length; i++)
-            {
-                if (dataCell[i] == '\"')
-                {
+            for (int i = 0; i < dataCell.Length; i++) {
+                if (dataCell[i] == '\"') {
                     quotaCount++;
                 }
-                else
-                {
+                else {
                     break;
                 }
             }
 
             oddQuota = false;
-            if (quotaCount % 2 == 1)
-            {
+            if (quotaCount % 2 == 1) {
                 oddQuota = true;
             }
 
@@ -446,27 +374,22 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="dataCell"></param>
         /// <returns></returns>
-        private bool IfOddEndQuota(string dataCell)
-        {
+        private bool IfOddEndQuota(string dataCell) {
             int quotaCount;
             bool oddQuota;
 
             quotaCount = 0;
-            for (int i = dataCell.Length - 1; i >= 0; i--)
-            {
-                if (dataCell[i] == '\"')
-                {
+            for (int i = dataCell.Length - 1; i >= 0; i--) {
+                if (dataCell[i] == '\"') {
                     quotaCount++;
                 }
-                else
-                {
+                else {
                     break;
                 }
             }
 
             oddQuota = false;
-            if (quotaCount % 2 == 1)
-            {
+            if (quotaCount % 2 == 1) {
                 oddQuota = true;
             }
 
@@ -477,8 +400,7 @@ namespace AutoScoreFiller
         /// 加入新的数据行
         /// </summary>
         /// <param name="newDataLine">新的数据行</param>
-        private void AddNewDataLine(string newDataLine)
-        {
+        private void AddNewDataLine(string newDataLine) {
             Debug.WriteLine("NewLine:" + newDataLine);
             //return;
             ArrayList colAL = new ArrayList();
@@ -488,47 +410,38 @@ namespace AutoScoreFiller
 
             oddStartQuota = false;
             cellData = "";
-            for (int i = 0; i < dataArray.Length; i++)
-            {
-                if (oddStartQuota)
-                {
+            for (int i = 0; i < dataArray.Length; i++) {
+                if (oddStartQuota) {
                     //因为前面用逗号分割，所以要加上逗号
                     cellData += "," + dataArray[i];
                     //是否以奇数个引号结尾
-                    if (IfOddEndQuota(dataArray[i]))
-                    {
+                    if (IfOddEndQuota(dataArray[i])) {
                         colAL.Add(GetHandleData(cellData));
                         oddStartQuota = false;
                         continue;
                     }
                 }
-                else
-                {
+                else {
                     //是否以奇数个引号开始
-                    if (IfOddStartQuota(dataArray[i]))
-                    {
+                    if (IfOddStartQuota(dataArray[i])) {
                         //是否以奇数个引号结尾，不能是一个双引号，并且不是奇数个引号
-                        if (IfOddEndQuota(dataArray[i]) && dataArray[i].Length > 2 && !IfOddQuota(dataArray[i]))
-                        {
+                        if (IfOddEndQuota(dataArray[i]) && dataArray[i].Length > 2 && !IfOddQuota(dataArray[i])) {
                             colAL.Add(GetHandleData(dataArray[i]));
                             oddStartQuota = false;
                             continue;
                         }
-                        else
-                        {
+                        else {
                             oddStartQuota = true;
                             cellData = dataArray[i];
                             continue;
                         }
                     }
-                    else
-                    {
+                    else {
                         colAL.Add(GetHandleData(dataArray[i]));
                     }
                 }
             }
-            if (oddStartQuota)
-            {
+            if (oddStartQuota) {
                 throw new Exception("数据格式有问题");
             }
             this.rowAL.Add(colAL);
@@ -539,28 +452,21 @@ namespace AutoScoreFiller
         /// </summary>
         /// <param name="fileCellData"></param>
         /// <returns></returns>
-        private string GetHandleData(string fileCellData)
-        {
-            if (fileCellData == "")
-            {
+        private string GetHandleData(string fileCellData) {
+            if (fileCellData == "") {
                 return "";
             }
-            if (IfOddStartQuota(fileCellData))
-            {
-                if (IfOddEndQuota(fileCellData))
-                {
+            if (IfOddStartQuota(fileCellData)) {
+                if (IfOddEndQuota(fileCellData)) {
                     return fileCellData.Substring(1, fileCellData.Length - 2).Replace("\"\"", "\""); //去掉首尾引号，然后把双引号变成单引号
                 }
-                else
-                {
+                else {
                     throw new Exception("数据引号无法匹配" + fileCellData);
                 }
             }
-            else
-            {
+            else {
                 //考虑形如""    """"      """"""
-                if (fileCellData.Length > 2 && fileCellData[0] == '\"')
-                {
+                if (fileCellData.Length > 2 && fileCellData[0] == '\"') {
                     fileCellData = fileCellData.Substring(1, fileCellData.Length - 2).Replace("\"\"", "\""); //去掉首尾引号，然后把双引号变成单引号
                 }
             }

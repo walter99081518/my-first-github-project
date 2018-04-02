@@ -34,13 +34,13 @@ namespace AutoScoreFiller {
                 }
                 catch (Exception ex) {
                     fatal = true;
-                    EmitMessage("程序运行中遇到严重错误，状态记录线程将停止运行\n" + ex.Message);
+                    EmitMessage(ex.Message);
                 }
                 finally {
                     Monitor.Exit(msglist);
                 }
                 if (fatal) {
-                    //break;
+                    break;
                 }
             }
         }

@@ -39,7 +39,7 @@ namespace AutoScoreFiller {
                 ParseConfigXml();
                 if (this.log != 0) {
                     thr = new WriteLogThread();
-                    //WriteLogThread.EmitMessage += new EmitCustomizedMessage(ReceiveMessage);
+                    WriteLogThread.EmitMessage += new EmitCustomizedMessage(ReceiveMessage);
                     thr.Start();
                 }
             }
@@ -50,8 +50,8 @@ namespace AutoScoreFiller {
         }
 
         private void ReceiveMessage(string msg) {
-            //msgbox.ShowMessageDialog(msg, "警告");
-            //Application.Exit();
+            msgbox.ShowMessageDialog(msg, "错误");
+            Application.Exit();
         }
 
         private bool IsNodeIsExist(string xmlpath, string nodename) {
@@ -173,13 +173,9 @@ namespace AutoScoreFiller {
                     if (tag_name == "input" && he.GetAttribute("type").ToLower() != "text") {
                         continue;
                     }
-
-                    /*
-                    if (!hec[i].Parent.Parent.Parent.Parent.Equals(table))
-                    {
+                    if (!he.Parent.Parent.Parent.Parent.Equals(table)) {
                         continue;
                     }
-                    */
 
                     string id = he.GetAttribute("id");
                     if (id == null) {
@@ -189,7 +185,6 @@ namespace AutoScoreFiller {
                         id += "_#@#_temp_id_123456";
                     }
                     he.SetAttribute("id", id);
-
                     args[0] = id;
                     object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
                     if (jsret == null || jsret.ToString().ToLower() == "false") {
@@ -201,15 +196,11 @@ namespace AutoScoreFiller {
                     }
                     else {
                         HtmlElementCollection options = he.GetElementsByTagName("option");
-                        options[0].SetAttribute("selected", "selected");
-
-                        int i = 0;
-                        while (i < options.Count) {
+                        for (int i = 0; i < options.Count; i++) {
                             if (options[i].InnerHtml.Trim() == "") {
                                 options[i].SetAttribute("selected", "selected");
                                 break;
                             }
-                            i++;
                         }
                     }
                 }
@@ -445,7 +436,7 @@ namespace AutoScoreFiller {
                             continue;
                         }
 
-                        string innerhtml = td.InnerHtml;
+                        string innerhtml = "";
                         HtmlElementCollection elements = td.Children;
                         if (elements != null && elements.Count > 0) {
                             foreach (HtmlElement he in elements) {
@@ -460,23 +451,18 @@ namespace AutoScoreFiller {
                                 he.SetAttribute("id", id);
 
                                 object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
-                                if (jsret != null && jsret.ToString().ToLower() == "false") {
-                                    innerhtml = Regex.Replace(innerhtml, he.OuterHtml + "{1}", "\t");
+                                if (jsret == null || jsret.ToString().ToLower() == "false") {
                                     continue;
                                 }
 
                                 string tagname = he.TagName.ToLower();
                                 if (!tagnames.Contains(tagname)) {
-                                    innerhtml = Regex.Replace(innerhtml, he.OuterHtml + "{1}", "\t");
+                                    continue;
                                 }
-                                else if (tagname == "input") {
-                                    if (he.GetAttribute("type").ToLower() == "text") {
-                                        string val = "\t" + he.GetAttribute("value") + "\t";
-                                        innerhtml = Regex.Replace(innerhtml, he.OuterHtml + "{1}", val);
-                                    }
-                                    else {
-                                        innerhtml = Regex.Replace(innerhtml, he.OuterHtml + "{1}", "\t");
-                                    }
+
+                                string text = "";
+                                if (tagname == "input" && he.GetAttribute("type").ToLower() == "text") {
+                                    text = he.GetAttribute("value");
                                 }
                                 else if (tagname == "select") {
                                     foreach (HtmlElement opt in he.GetElementsByTagName("option")) {
@@ -485,22 +471,22 @@ namespace AutoScoreFiller {
                                             continue;
                                         }
                                         if (is_selected.ToLower() == "true") {
-                                            string val = "\t" + opt.InnerText + "\t";
-                                            innerhtml = Regex.Replace(innerhtml, he.OuterHtml + "{1}", val);
+                                            text = opt.InnerText;
                                             break;
                                         }
                                     }
                                 }
                                 else {
-                                    innerhtml = innerhtml.Replace(he.OuterHtml, "\t" + he.InnerText + "\t");
+                                    text = he.InnerText;
                                 }
+                                innerhtml = (text == null ? "" : text);
+                                lls.AddLast(innerhtml);
                             }
                         }
                         else {
-                            innerhtml = td.InnerText;
+                            innerhtml = td.InnerText == null ? "" : td.InnerText;
+                            lls.AddLast(innerhtml);
                         }
-                        innerhtml = Regex.Replace(innerhtml, "\t+", "\t");
-                        lls.AddLast(innerhtml.Trim());
                     }
                     csv.WriteCsvFile(lls);
                 }
