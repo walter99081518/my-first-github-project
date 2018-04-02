@@ -351,8 +351,7 @@ namespace AutoScoreFiller {
                             if (tagname == "input" || tagname == "textarea") {
                                 hec[k].InnerText = csr[m, ++n].ToString();
                             }
-                            else // select
-                            {
+                            else {// select
                                 foreach (HtmlElement opt in hec[k].GetElementsByTagName("option")) {
                                     string text = csr[m, n + 1].ToString();
                                     if (opt.InnerText == text) {
