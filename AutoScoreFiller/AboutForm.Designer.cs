@@ -33,7 +33,6 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -65,7 +64,6 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 5);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(160, 12);
@@ -89,15 +87,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "本程序可用于教务系统学生成绩的上传下载，";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(144, 20);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "提高教师的工作效率";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -114,7 +103,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(168, 20);
             this.label6.TabIndex = 5;
-            this.label6.Text = "Build：201701240242";
+            this.label6.Text = "Build：201804040007";
             // 
             // AboutForm
             // 
@@ -147,7 +136,6 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
     }

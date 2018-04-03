@@ -280,8 +280,13 @@ namespace AutoScoreFiller {
             if (this.fs != null && this.sw != null) {
                 LinkedListNode<string> node = ls.First;
                 while (node != null) {
-                    node.Value = node.Value.Replace("\"", "\"\"");
-                    node.Value = "\"" + node.Value + "\"";
+                    string text = Regex.Replace(node.Value, "(^\"[^\"])", "\"$0");
+                    text = Regex.Replace(text, "([^\"]\"$)", "$0\"");
+                    while (Regex.IsMatch(text, "([^\"])\"([^\"])")) {
+                        text = Regex.Replace(text, "([^\"])\"([^\"])", "$1\"\"$2");
+                    }
+                    text = "\"" + text + "\"";
+                    node.Value = text;
                     node = node.Next;
                 }
 

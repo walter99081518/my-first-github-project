@@ -28,6 +28,69 @@ namespace AutoScoreFiller {
         private string tablename = null;    // 待查找表格的name属性的值
         private List<string> classnames;    // 配置文件中会指定具有哪些class属性的input元素在导入数据时被忽略
         private int log = 0;
+        private string embededScript =
+            @"function __getInnerText(id) {
+                try {
+                    var nodes = document.getElementById(id).childNodes;
+                    if (nodes == null || nodes == undefined) {
+                        return '';
+                    }
+                    var arr = [];
+                    var tagnames = ['a', 'b', 'p', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'select', 'span', 'textarea'];
+                    for (var i = 0; i < nodes.length; i++) {
+                        var node = nodes[i];
+                        if (node.nodeType == 1) { // Node.ELEMENT_NODE
+                            if (__getComputedStyle(node, 'display') == 'none') {
+                                continue;
+                            }
+                            if (tagnames.indexOf(node.nodeName.toLowerCase()) == -1) {
+                                continue;
+                            }
+                            if (node.nodeName.toLowerCase() == 'input' && node.type == 'text') {
+                                arr[arr.length] = node.value;
+                            }
+                            else if (node.nodeName.toLowerCase() == 'textarea') {
+                                arr[arr.length] = node.textContent;
+                            }
+                            else if (node.nodeName.toLowerCase() == 'select') {
+                                var options = node.children;
+                                for (var i = 0; i < options.length; i++) {
+                                    if (options[i].selected) {
+                                        arr[arr.length] = options[i].textContent;
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                arr[arr.length] = node.innerHTML;
+                            }
+                        }
+                        else if (node.nodeType == 3) { // Node.TEXT_NODE(3)
+                            arr[arr.length] = node.nodeValue;
+                        }
+                        else {
+                            arr[arr.length] = node.innerHTML;
+                        }
+                    }
+                    return arr.join('\t');
+                }
+                catch (ex) {
+                    return '';
+                }
+            }
+
+            function __getComputedStyle(ele, attr){
+                if (window.getComputedStyle) {
+                    return window.getComputedStyle(ele, null)[attr];
+                }
+                return ele.currentStyle[attr];
+            }
+
+            function __isVisible(id) {
+                var element = document.getElementById(id);
+                var display = __getComputedStyle(element, 'display') + '';
+                return display.toLowerCase();
+            }";
 
         public MainForm() {
             InitializeComponent();
@@ -140,22 +203,7 @@ namespace AutoScoreFiller {
                 script = this.webBrowser.Document.CreateElement("script");
                 script.SetAttribute("type", "text/javascript");
                 script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
-                script.SetAttribute("text", "\n" +
-                    @"function __isVisible(id) {
-                            var element = document.getElementById(id);
-                            var display = element.currentStyle.display + '';
-                            if (id.match(/_#@#_temp_id_123456$/) != null) {
-                                element.id = id.replace(/_#@#_temp_id_123456$/, '');
-                            }
-                            else {
-                                element.id = null;
-                            }
-                            if (display.toLowerCase().search('none') != -1) {
-                                return false;
-                            }
-                            return true;
-                        }" + "\n"
-                );
+                script.SetAttribute("text", this.embededScript);
                 this.webBrowser.Document.Body.AppendChild(script);
             }
             object[] args = new object[1];
@@ -178,16 +226,15 @@ namespace AutoScoreFiller {
                     }
 
                     string id = he.GetAttribute("id");
-                    if (id == null) {
-                        id = "#@#_temp_id_123456";
+                    string newId = "#@#_temp_id_123456";
+                    if (id != null) {
+                        newId = id + "_#@#_temp_id_123456";
                     }
-                    else {
-                        id += "_#@#_temp_id_123456";
-                    }
+                    he.SetAttribute("id", newId);
+                    args[0] = newId;
+                    object obj = this.webBrowser.Document.InvokeScript("__isVisible", args);
                     he.SetAttribute("id", id);
-                    args[0] = id;
-                    object jsret = this.webBrowser.Document.InvokeScript("__isVisible", args);
-                    if (jsret == null || jsret.ToString().ToLower() == "false") {
+                    if (obj == null || obj.ToString() == "none") {
                         continue;
                     }
 
@@ -196,11 +243,8 @@ namespace AutoScoreFiller {
                     }
                     else {
                         HtmlElementCollection options = he.GetElementsByTagName("option");
-                        for (int i = 0; i < options.Count; i++) {
-                            if (options[i].InnerHtml.Trim() == "") {
-                                options[i].SetAttribute("selected", "selected");
-                                break;
-                            }
+                        if (options != null && options.Count > 0) {
+                            options[0].SetAttribute("selected", "selected");
                         }
                     }
                 }
@@ -284,22 +328,7 @@ namespace AutoScoreFiller {
                     script = this.webBrowser.Document.CreateElement("script");
                     script.SetAttribute("type", "text/javascript");
                     script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
-                    script.SetAttribute("text", "\n" +
-                        @"function __isVisible(id) {
-                            var element = document.getElementById(id);
-                            var display = element.currentStyle.display + '';
-                            if (id.match(/_#@#_temp_id_123456$/) != null) {
-                                element.id = id.replace(/_#@#_temp_id_123456$/, '');
-                            }
-                            else {
-                                element.id = null;
-                            }
-                            if (display.toLowerCase().search('none') != -1) {
-                                return false;
-                            }
-                            return true;
-                        }" + "\n"
-                    );
+                    script.SetAttribute("text", this.embededScript);
                     this.webBrowser.Document.Body.AppendChild(script);
                 }
 
@@ -312,6 +341,7 @@ namespace AutoScoreFiller {
                     if (!trs[i].Parent.Parent.Equals(table)) { // trs[i].Parent.TagName == "TBODY";
                         continue;
                     }
+                    bool validRow = false;
                     HtmlElementCollection tds = trs[i].GetElementsByTagName("td");
                     for (int j = 0, n = 0; j < tds.Count && n < csr.ColCount; j++) {
                         HtmlElementCollection hec = tds[j].Children;
@@ -330,18 +360,19 @@ namespace AutoScoreFiller {
                             }
                             // Check if the object is visible.
                             string id = hec[k].GetAttribute("id");
-                            if (id == null) {
-                                id = "#@#_temp_id_123456";
+                            string newId = "#@#_temp_id_123456";
+                            if (id != null) {
+                                newId = id + "_#@#_temp_id_123456";
                             }
-                            else {
-                                id += "_#@#_temp_id_123456";
-                            }
-                            args[0] = id;
+                            args[0] = newId;
+                            hec[k].SetAttribute("id", newId);
+                            object obj = this.webBrowser.Document.InvokeScript("__isVisible", args);
                             hec[k].SetAttribute("id", id);
-                            object jsret = this.webBrowser.Document.InvokeScript("__isVisible", args);
-                            if (jsret == null || jsret.ToString().ToLower() == "false") {
+
+                            if (obj == null || obj.ToString() == "none") {
                                 continue;
                             }
+
                             // Elements must be editable.
                             if (!hec[k].Enabled) {
                                 ++n;
@@ -349,23 +380,26 @@ namespace AutoScoreFiller {
                             }
                             // Copy text to elements' inner area.
                             if (tagname == "input" || tagname == "textarea") {
-                                hec[k].InnerText = csr[m, ++n].ToString();
+                                hec[k].InnerText = csr[m + 1, n + 1].ToString();
+                                validRow = true;
                             }
                             else {// select
                                 foreach (HtmlElement opt in hec[k].GetElementsByTagName("option")) {
-                                    string text = csr[m, n + 1].ToString();
+                                    string text = csr[m + 1, n + 1].ToString();
+                                    validRow = true;
                                     if (opt.InnerText == text) {
                                         opt.SetAttribute("selected", "selected");
                                         break;
                                     }
                                 }
-                                ++n;
                             }
+                            ++n;
                         }
                     }
-                    ++m;
+                    if (validRow) {
+                        ++m;
+                    }
                 }
-                //csr.WriteTextFile("d:/debug.txt", this.webBrowser.Document.Body.InnerHtml);
             }
             catch (System.Exception ex) {
                 this.msgbox.ShowMessageDialog("导入数据失败", "错误");
@@ -397,79 +431,7 @@ namespace AutoScoreFiller {
                     script = this.webBrowser.Document.CreateElement("script");
                     script.SetAttribute("type", "text/javascript");
                     script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
-                    script.SetAttribute("text",
-                        @"function __isVisible(id) {
-                            var element = document.getElementById(id);
-                            var display = __getComputedStyle(element, 'display');
-                            if (id.match(/_#@#_temp_id_123456$/) != null) {
-                                element.id = id.replace(/_#@#_temp_id_123456$/, '');
-                            }
-                            else {
-                                element.id = null;
-                            }
-                            if (display.toLowerCase().search('none') != -1) {
-                                return false;
-                            }
-                            return true;
-                        }
-
-                        function __getInnerText(id) {
-                            try {
-                                var nodes = document.getElementById(id).childNodes;
-                                if (nodes == null || nodes == undefined) {
-                                    return '';
-                                }
-                                var arr = [];
-                                var tagnames = ['a', 'b', 'p', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'select', 'span', 'textarea'];
-                                for (var i = 0; i < nodes.length; i++) {
-                                    var node = nodes[i];
-                                    if (node.nodeType == 1) { // Node.ELEMENT_NODE
-                                        if (__getComputedStyle(node, 'display') == 'none') {
-                                            continue;
-                                        }
-                                        if (tagnames.indexOf(node.nodeName.toLowerCase()) == -1) {
-                                            continue;
-                                        }
-                                        if (node.nodeName.toLowerCase() == 'input' && node.type == 'text') {
-                                            arr[arr.length] = node.value;
-                                        }
-                                        else if (node.nodeName.toLowerCase() == 'textarea') {
-                                            arr[arr.length] = node.textContent;
-                                        }
-                                        else if (node.nodeName.toLowerCase() == 'select') {
-                                            var options = node.children;
-                                            for (var i = 0; i < options.length; i++) {
-                                                if (options[i].selected) {
-                                                    arr[arr.length] = options[i].textContent;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            arr[arr.length] = node.innerHTML;
-                                        }
-                                    }
-                                    else if (node.nodeType == 3) { // Node.TEXT_NODE(3)
-                                        arr[arr.length] = node.nodeValue;
-                                    }
-                                    else {
-                                        arr[arr.length] = node.innerHTML;
-                                    }
-                                }
-                                return arr.join('\t');
-                            }
-                            catch (ex) {
-                                return String(ex);
-                            }
-                        }
-
-                        function __getComputedStyle(ele, attr){
-                            if (window.getComputedStyle) {
-                                return window.getComputedStyle(ele, null)[attr];
-                            }
-                            return ele.currentStyle[attr];
-                        }"
-                    );
+                    script.SetAttribute("text", this.embededScript);
                     this.webBrowser.Document.Body.AppendChild(script);
                 }
 
@@ -493,26 +455,16 @@ namespace AutoScoreFiller {
                         }
 
                         string id = td.GetAttribute("id");
-                        if (id == null) {
-                            id = "#@#_temp_id_123456";
+                        string newId = "#@#_temp_id_123456";
+                        if (id != null) {
+                            newId = id + "_#@#_temp_id_123456";
                         }
-                        else {
-                            id += "_#@#_temp_id_123456";
-                        }
-                        td.SetAttribute("id", id);
-
-                        args[0] = id;
+                        td.SetAttribute("id", newId);
+                        args[0] = newId;
                         object obj = this.webBrowser.Document.InvokeScript("__getInnerText", args);
-                        string innerText = obj == null ? "" : obj.ToString();
-
-                        if (Regex.IsMatch(id, @"_#@#_temp_id_123456")) {
-                            id = Regex.Replace(id, @"_#@#_temp_id_123456$", "");
-                        }
-                        else {
-                            id = null;
-                        }
                         td.SetAttribute("id", id);
 
+                        string innerText = (obj == null ? "" : obj.ToString());
                         string[] texts = innerText.Split('\t');
                         for (int j = 0; j < texts.Length; j++) {
                             lls.AddLast(texts[j]);

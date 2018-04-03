@@ -189,27 +189,27 @@
             // 
             this.MenuItemImportFromExcel.Name = "MenuItemImportFromExcel";
             this.MenuItemImportFromExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.MenuItemImportFromExcel.Size = new System.Drawing.Size(325, 26);
-            this.MenuItemImportFromExcel.Text = "从Excel文件导入数据到网页";
+            this.MenuItemImportFromExcel.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemImportFromExcel.Text = "从CSV文件导入数据到网页";
             this.MenuItemImportFromExcel.Click += new System.EventHandler(this.MenuItemImportFromExcel_Click);
             // 
             // MenuItemExportToExcel
             // 
             this.MenuItemExportToExcel.Name = "MenuItemExportToExcel";
             this.MenuItemExportToExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.MenuItemExportToExcel.Size = new System.Drawing.Size(325, 26);
-            this.MenuItemExportToExcel.Text = "将网页数据导出到Excel文件";
+            this.MenuItemExportToExcel.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemExportToExcel.Text = "将网页数据导出到CSV文件";
             this.MenuItemExportToExcel.Click += new System.EventHandler(this.MenuItemExportToExcel_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(322, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(314, 6);
             // 
             // MenuItemAbout
             // 
             this.MenuItemAbout.Name = "MenuItemAbout";
-            this.MenuItemAbout.Size = new System.Drawing.Size(325, 26);
+            this.MenuItemAbout.Size = new System.Drawing.Size(317, 26);
             this.MenuItemAbout.Text = "关于";
             this.MenuItemAbout.Click += new System.EventHandler(this.MenuItemAbout_Click);
             // 
@@ -225,7 +225,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "MainForm";
-            this.Text = "网页表格数据导入导出助手";
+            this.Text = "教务系统学生成绩上传下载助手";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
