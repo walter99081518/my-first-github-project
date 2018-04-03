@@ -141,7 +141,7 @@ namespace AutoScoreFiller {
                 script.SetAttribute("type", "text/javascript");
                 script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
                 script.SetAttribute("text", "\n" +
-                    @"function __is_visible(id) {
+                    @"function __isVisible(id) {
                             var element = document.getElementById(id);
                             var display = element.currentStyle.display + '';
                             if (id.match(/_#@#_temp_id_123456$/) != null) {
@@ -186,7 +186,7 @@ namespace AutoScoreFiller {
                     }
                     he.SetAttribute("id", id);
                     args[0] = id;
-                    object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
+                    object jsret = this.webBrowser.Document.InvokeScript("__isVisible", args);
                     if (jsret == null || jsret.ToString().ToLower() == "false") {
                         continue;
                     }
@@ -285,7 +285,7 @@ namespace AutoScoreFiller {
                     script.SetAttribute("type", "text/javascript");
                     script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
                     script.SetAttribute("text", "\n" +
-                        @"function __is_visible(id) {
+                        @"function __isVisible(id) {
                             var element = document.getElementById(id);
                             var display = element.currentStyle.display + '';
                             if (id.match(/_#@#_temp_id_123456$/) != null) {
@@ -338,7 +338,7 @@ namespace AutoScoreFiller {
                             }
                             args[0] = id;
                             hec[k].SetAttribute("id", id);
-                            object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
+                            object jsret = this.webBrowser.Document.InvokeScript("__isVisible", args);
                             if (jsret == null || jsret.ToString().ToLower() == "false") {
                                 continue;
                             }
@@ -397,10 +397,10 @@ namespace AutoScoreFiller {
                     script = this.webBrowser.Document.CreateElement("script");
                     script.SetAttribute("type", "text/javascript");
                     script.SetAttribute("id", "_#@#_embedded_stript_id_check_if_element_visible");
-                    script.SetAttribute("text", "\n" +
-                        @"function __is_visible(id) {
+                    script.SetAttribute("text",
+                        @"function __isVisible(id) {
                             var element = document.getElementById(id);
-                            var display = element.currentStyle.display + '';
+                            var display = __getComputedStyle(element, 'display');
                             if (id.match(/_#@#_temp_id_123456$/) != null) {
                                 element.id = id.replace(/_#@#_temp_id_123456$/, '');
                             }
@@ -411,7 +411,64 @@ namespace AutoScoreFiller {
                                 return false;
                             }
                             return true;
-                        }" + "\n"
+                        }
+
+                        function __getInnerText(id) {
+                            try {
+                                var nodes = document.getElementById(id).childNodes;
+                                if (nodes == null || nodes == undefined) {
+                                    return '';
+                                }
+                                var arr = [];
+                                var tagnames = ['a', 'b', 'p', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'select', 'span', 'textarea'];
+                                for (var i = 0; i < nodes.length; i++) {
+                                    var node = nodes[i];
+                                    if (node.nodeType == 1) { // Node.ELEMENT_NODE
+                                        if (__getComputedStyle(node, 'display') == 'none') {
+                                            continue;
+                                        }
+                                        if (tagnames.indexOf(node.nodeName.toLowerCase()) == -1) {
+                                            continue;
+                                        }
+                                        if (node.nodeName.toLowerCase() == 'input' && node.type == 'text') {
+                                            arr[arr.length] = node.value;
+                                        }
+                                        else if (node.nodeName.toLowerCase() == 'textarea') {
+                                            arr[arr.length] = node.textContent;
+                                        }
+                                        else if (node.nodeName.toLowerCase() == 'select') {
+                                            var options = node.children;
+                                            for (var i = 0; i < options.length; i++) {
+                                                if (options[i].selected) {
+                                                    arr[arr.length] = options[i].textContent;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            arr[arr.length] = node.innerHTML;
+                                        }
+                                    }
+                                    else if (node.nodeType == 3) { // Node.TEXT_NODE(3)
+                                        arr[arr.length] = node.nodeValue;
+                                    }
+                                    else {
+                                        arr[arr.length] = node.innerHTML;
+                                    }
+                                }
+                                return arr.join('\t');
+                            }
+                            catch (ex) {
+                                return String(ex);
+                            }
+                        }
+
+                        function __getComputedStyle(ele, attr){
+                            if (window.getComputedStyle) {
+                                return window.getComputedStyle(ele, null)[attr];
+                            }
+                            return ele.currentStyle[attr];
+                        }"
                     );
                     this.webBrowser.Document.Body.AppendChild(script);
                 }
@@ -435,56 +492,30 @@ namespace AutoScoreFiller {
                             continue;
                         }
 
-                        string innerhtml = "";
-                        HtmlElementCollection elements = td.Children;
-                        if (elements != null && elements.Count > 0) {
-                            foreach (HtmlElement he in elements) {
-                                string id = he.GetAttribute("id");
-                                if (id == null) {
-                                    id = "#@#_temp_id_123456";
-                                }
-                                else {
-                                    id += "_#@#_temp_id_123456";
-                                }
-                                args[0] = id;
-                                he.SetAttribute("id", id);
-
-                                object jsret = this.webBrowser.Document.InvokeScript("__is_visible", args);
-                                if (jsret == null || jsret.ToString().ToLower() == "false") {
-                                    continue;
-                                }
-
-                                string tagname = he.TagName.ToLower();
-                                if (!tagnames.Contains(tagname)) {
-                                    continue;
-                                }
-
-                                string text = "";
-                                if (tagname == "input" && he.GetAttribute("type").ToLower() == "text") {
-                                    text = he.GetAttribute("value");
-                                }
-                                else if (tagname == "select") {
-                                    foreach (HtmlElement opt in he.GetElementsByTagName("option")) {
-                                        string is_selected = opt.GetAttribute("selected");
-                                        if (is_selected == null) {
-                                            continue;
-                                        }
-                                        if (is_selected.ToLower() == "true") {
-                                            text = opt.InnerText;
-                                            break;
-                                        }
-                                    }
-                                }
-                                else {
-                                    text = he.InnerText;
-                                }
-                                innerhtml = (text == null ? "" : text);
-                                lls.AddLast(innerhtml);
-                            }
+                        string id = td.GetAttribute("id");
+                        if (id == null) {
+                            id = "#@#_temp_id_123456";
                         }
                         else {
-                            innerhtml = td.InnerText == null ? "" : td.InnerText;
-                            lls.AddLast(innerhtml);
+                            id += "_#@#_temp_id_123456";
+                        }
+                        td.SetAttribute("id", id);
+
+                        args[0] = id;
+                        object obj = this.webBrowser.Document.InvokeScript("__getInnerText", args);
+                        string innerText = obj == null ? "" : obj.ToString();
+
+                        if (Regex.IsMatch(id, @"_#@#_temp_id_123456")) {
+                            id = Regex.Replace(id, @"_#@#_temp_id_123456$", "");
+                        }
+                        else {
+                            id = null;
+                        }
+                        td.SetAttribute("id", id);
+
+                        string[] texts = innerText.Split('\t');
+                        for (int j = 0; j < texts.Length; j++) {
+                            lls.AddLast(texts[j]);
                         }
                     }
                     csv.WriteCsvFile(lls);
