@@ -39,9 +39,11 @@
             this.btnNext = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuItemTool = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemImportFromExcel = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemExportToExcel = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemImportFromCsv = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemExportToCsv = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuItemClearBrowsingRecord = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -101,11 +103,13 @@
             // cmbUrl
             // 
             this.cmbUrl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbUrl.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cmbUrl.FormattingEnabled = true;
             this.cmbUrl.Location = new System.Drawing.Point(3, 3);
             this.cmbUrl.Name = "cmbUrl";
             this.cmbUrl.Size = new System.Drawing.Size(1060, 28);
             this.cmbUrl.TabIndex = 4;
+            this.cmbUrl.DropDown += new System.EventHandler(this.cmbUrl_DropDown);
             this.cmbUrl.SelectedIndexChanged += new System.EventHandler(this.cmbUrl_SelectedIndexChanged);
             this.cmbUrl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cmbUrl_KeyPress);
             // 
@@ -141,11 +145,12 @@
             // btnPrevious
             // 
             this.btnPrevious.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPrevious.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnPrevious.Location = new System.Drawing.Point(3, 3);
             this.btnPrevious.Name = "btnPrevious";
             this.btnPrevious.Size = new System.Drawing.Size(62, 26);
             this.btnPrevious.TabIndex = 2;
-            this.btnPrevious.Text = "前页";
+            this.btnPrevious.Text = "后退";
             this.btnPrevious.UseVisualStyleBackColor = true;
             this.btnPrevious.Click += new System.EventHandler(this.btnPrevious_Click);
             // 
@@ -156,7 +161,7 @@
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(62, 26);
             this.btnNext.TabIndex = 4;
-            this.btnNext.Text = "后页";
+            this.btnNext.Text = "前进";
             this.btnNext.UseVisualStyleBackColor = true;
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
@@ -175,9 +180,11 @@
             // MenuItemTool
             // 
             this.MenuItemTool.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemImportFromExcel,
-            this.MenuItemExportToExcel,
+            this.MenuItemImportFromCsv,
+            this.MenuItemExportToCsv,
             this.toolStripSeparator1,
+            this.MenuItemClearBrowsingRecord,
+            this.toolStripSeparator2,
             this.MenuItemAbout});
             this.MenuItemTool.Font = new System.Drawing.Font("Microsoft YaHei", 9F);
             this.MenuItemTool.Name = "MenuItemTool";
@@ -185,26 +192,38 @@
             this.MenuItemTool.Text = "工具";
             this.MenuItemTool.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // MenuItemImportFromExcel
+            // MenuItemImportFromCsv
             // 
-            this.MenuItemImportFromExcel.Name = "MenuItemImportFromExcel";
-            this.MenuItemImportFromExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.MenuItemImportFromExcel.Size = new System.Drawing.Size(317, 26);
-            this.MenuItemImportFromExcel.Text = "从CSV文件导入数据到网页";
-            this.MenuItemImportFromExcel.Click += new System.EventHandler(this.MenuItemImportFromExcel_Click);
+            this.MenuItemImportFromCsv.Name = "MenuItemImportFromCsv";
+            this.MenuItemImportFromCsv.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.MenuItemImportFromCsv.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemImportFromCsv.Text = "从CSV文件导入数据到网页";
+            this.MenuItemImportFromCsv.Click += new System.EventHandler(this.MenuItemImportFromCsv_Click);
             // 
-            // MenuItemExportToExcel
+            // MenuItemExportToCsv
             // 
-            this.MenuItemExportToExcel.Name = "MenuItemExportToExcel";
-            this.MenuItemExportToExcel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.MenuItemExportToExcel.Size = new System.Drawing.Size(317, 26);
-            this.MenuItemExportToExcel.Text = "将网页数据导出到CSV文件";
-            this.MenuItemExportToExcel.Click += new System.EventHandler(this.MenuItemExportToExcel_Click);
+            this.MenuItemExportToCsv.Name = "MenuItemExportToCsv";
+            this.MenuItemExportToCsv.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.MenuItemExportToCsv.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemExportToCsv.Text = "将网页数据导出到CSV文件";
+            this.MenuItemExportToCsv.Click += new System.EventHandler(this.MenuItemExportToCsv_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(314, 6);
+            // 
+            // MenuItemClearBrowsingRecord
+            // 
+            this.MenuItemClearBrowsingRecord.Name = "MenuItemClearBrowsingRecord";
+            this.MenuItemClearBrowsingRecord.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemClearBrowsingRecord.Text = "清空浏览记录";
+            this.MenuItemClearBrowsingRecord.Click += new System.EventHandler(this.MenuItemClearBrowsingRecord_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(314, 6);
             // 
             // MenuItemAbout
             // 
@@ -248,10 +267,12 @@
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem MenuItemTool;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemImportFromExcel;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemExportToExcel;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemImportFromCsv;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemExportToCsv;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem MenuItemAbout;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemClearBrowsingRecord;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 

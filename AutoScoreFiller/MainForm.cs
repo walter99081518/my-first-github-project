@@ -26,7 +26,6 @@ namespace AutoScoreFiller {
         private XmlDocument xmldoc = null;  // 配置文件的Xml模型
         private XmlElement root = null;     // 配置文件的根节点
         private string tablename = null;    // 待查找表格的name属性的值
-        private List<string> classnames;    // 配置文件中会指定具有哪些class属性的input元素在导入数据时被忽略
         private int log = 0;
         private string embededScript =
             @"function __getInnerText(id) {
@@ -95,7 +94,6 @@ namespace AutoScoreFiller {
         public MainForm() {
             InitializeComponent();
             try {
-                classnames = new List<string>();
                 xmldoc = new XmlDocument();
                 msgbox = new MessageForm(this);
                 aboutform = new AboutForm(this);
@@ -134,12 +132,6 @@ namespace AutoScoreFiller {
 
             XmlNode table = root.SelectSingleNode("table");
             this.tablename = table.InnerText;
-
-            XmlNode skip = root.SelectSingleNode("skip");
-            XmlNodeList nodelist = skip.SelectNodes("classname");
-            for (int i = 0; i < nodelist.Count; i++) {
-                this.classnames.Add(nodelist[i].InnerText.ToLower());
-            }
 
             if (IsNodeIsExist("./config.xml", "favorites") && IsNodeIsExist("./config.xml", "url")) {
                 XmlNode favorites = root.SelectSingleNode("favorites");
@@ -258,19 +250,27 @@ namespace AutoScoreFiller {
             try {
                 if (e.KeyChar == (char)Keys.Enter) {
                     this.webBrowser.Navigate(this.cmbUrl.Text);
+                    string newurl = this.cmbUrl.Text.Trim().Replace("\\", "/");
 
-                    if (IsNodeIsExist("./config.xml", "favorites") && IsNodeIsExist("./config.xml", "url")) {
+                    if (IsNodeIsExist("./config.xml", "favorites")) {
                         XmlNode favorites = this.root.SelectSingleNode("favorites");
-                        XmlNodeList urllist = favorites.SelectNodes("url");
-                        int i;
-                        string newurl = this.cmbUrl.Text.Trim().Replace("\\", "/");
-                        for (i = 0; i < urllist.Count; i++) {
-                            string innertext = urllist[i].InnerText.Trim().Replace("\\", "/").ToLower();
-                            if (innertext == newurl.ToLower()) {
-                                break;
+                        if (IsNodeIsExist("./config.xml", "url")) {
+                            XmlNodeList urllist = favorites.SelectNodes("url");
+                            int i = 0;
+                            for (; i < urllist.Count; i++) {
+                                string innertext = urllist[i].InnerText.Trim().Replace("\\", "/").ToLower();
+                                if (innertext == newurl.ToLower()) {
+                                    break;
+                                }
+                            }
+                            if (i == urllist.Count) {
+                                XmlNode node = this.xmldoc.CreateNode(XmlNodeType.Element, "url", null);
+                                node.InnerText = newurl;
+                                favorites.AppendChild(node);
+                                this.xmldoc.Save("./config.xml");
                             }
                         }
-                        if (i == urllist.Count) {
+                        else {
                             XmlNode node = this.xmldoc.CreateNode(XmlNodeType.Element, "url", null);
                             node.InnerText = newurl;
                             favorites.AppendChild(node);
@@ -307,7 +307,7 @@ namespace AutoScoreFiller {
             this.aboutform.ShowDialog();
         }
 
-        private void MenuItemImportFromExcel_Click(object sender, EventArgs e) {
+        private void MenuItemImportFromCsv_Click(object sender, EventArgs e) {
             try {
                 HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
 
@@ -407,7 +407,7 @@ namespace AutoScoreFiller {
             }
         }
 
-        private void MenuItemExportToExcel_Click(object sender, EventArgs e) {
+        private void MenuItemExportToCsv_Click(object sender, EventArgs e) {
             try {
                 HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
 
@@ -475,7 +475,44 @@ namespace AutoScoreFiller {
                 csv.CloseCsvFile();
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("导出Excel文件失败", "错误");
+                this.msgbox.ShowMessageDialog("导出CSV文件失败", "错误");
+                if (thr != null) thr.Append(ex.StackTrace);
+            }
+        }
+
+        private void MenuItemClearBrowsingRecord_Click(object sender, EventArgs e) {
+            try {
+                this.msgbox.ShowMessageDialog("确定要删除浏览记录吗？", "确认", true);
+                if (this.msgbox.Confirm()) {
+                    if (IsNodeIsExist("./config.xml", "favorites") && IsNodeIsExist("./config.xml", "url")) {
+                        XmlNode favorites = this.root.SelectSingleNode("favorites");
+                        favorites.RemoveAll();
+                        this.xmldoc.Save("./config.xml");
+                        this.cmbUrl.Items.Clear();
+                    }
+                }
+            }
+            catch (System.Exception ex) {
+                this.msgbox.ShowMessageDialog("清空浏览记录失败", "错误");
+                if (thr != null) thr.Append(ex.StackTrace);
+            }
+        }
+
+        private void cmbUrl_DropDown(object sender, EventArgs e) {
+            try {
+                if (IsNodeIsExist("./config.xml", "favorites") && IsNodeIsExist("./config.xml", "url")) {
+                    XmlNode favorites = root.SelectSingleNode("favorites");
+                    XmlNodeList urllist = favorites.SelectNodes("url");
+                    this.cmbUrl.Items.Clear();
+                    for (int i = 0; i < urllist.Count; i++) {
+                        string innertext = urllist[i].InnerText.Trim();
+                        if (innertext != "") {
+                            this.cmbUrl.Items.Add(innertext);
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex) {
                 if (thr != null) thr.Append(ex.StackTrace);
             }
         }
