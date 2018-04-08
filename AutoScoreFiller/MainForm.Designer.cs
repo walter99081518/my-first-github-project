@@ -61,7 +61,7 @@
             this.webBrowser.MinimumSize = new System.Drawing.Size(23, 28);
             this.webBrowser.Name = "webBrowser";
             this.webBrowser.ScriptErrorsSuppressed = true;
-            this.webBrowser.Size = new System.Drawing.Size(1266, 623);
+            this.webBrowser.Size = new System.Drawing.Size(1002, 470);
             this.webBrowser.TabIndex = 0;
             this.webBrowser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser_DocumentCompleted);
             this.webBrowser.NewWindow += new System.ComponentModel.CancelEventHandler(this.webBrowser_NewWindow);
@@ -76,13 +76,13 @@
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 25);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1272, 665);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1008, 512);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // tableLayoutPanel2
@@ -97,7 +97,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1066, 32);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(802, 32);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
             // cmbUrl
@@ -107,7 +107,7 @@
             this.cmbUrl.FormattingEnabled = true;
             this.cmbUrl.Location = new System.Drawing.Point(3, 3);
             this.cmbUrl.Name = "cmbUrl";
-            this.cmbUrl.Size = new System.Drawing.Size(1060, 28);
+            this.cmbUrl.Size = new System.Drawing.Size(796, 25);
             this.cmbUrl.TabIndex = 4;
             this.cmbUrl.DropDown += new System.EventHandler(this.cmbUrl_DropDown);
             this.cmbUrl.SelectedIndexChanged += new System.EventHandler(this.cmbUrl_SelectedIndexChanged);
@@ -123,7 +123,7 @@
             this.tableLayoutPanel3.Controls.Add(this.btnPrevious, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnNext, 1, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(1066, 3);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(802, 3);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
@@ -173,7 +173,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1272, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1008, 25);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -188,7 +188,7 @@
             this.MenuItemAbout});
             this.MenuItemTool.Font = new System.Drawing.Font("Microsoft YaHei", 9F);
             this.MenuItemTool.Name = "MenuItemTool";
-            this.MenuItemTool.Size = new System.Drawing.Size(51, 24);
+            this.MenuItemTool.Size = new System.Drawing.Size(44, 21);
             this.MenuItemTool.Text = "工具";
             this.MenuItemTool.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -196,7 +196,7 @@
             // 
             this.MenuItemImportFromCsv.Name = "MenuItemImportFromCsv";
             this.MenuItemImportFromCsv.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.MenuItemImportFromCsv.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemImportFromCsv.Size = new System.Drawing.Size(263, 22);
             this.MenuItemImportFromCsv.Text = "从CSV文件导入数据到网页";
             this.MenuItemImportFromCsv.Click += new System.EventHandler(this.MenuItemImportFromCsv_Click);
             // 
@@ -204,39 +204,39 @@
             // 
             this.MenuItemExportToCsv.Name = "MenuItemExportToCsv";
             this.MenuItemExportToCsv.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.MenuItemExportToCsv.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemExportToCsv.Size = new System.Drawing.Size(263, 22);
             this.MenuItemExportToCsv.Text = "将网页数据导出到CSV文件";
             this.MenuItemExportToCsv.Click += new System.EventHandler(this.MenuItemExportToCsv_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(314, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(260, 6);
             // 
             // MenuItemClearBrowsingRecord
             // 
             this.MenuItemClearBrowsingRecord.Name = "MenuItemClearBrowsingRecord";
-            this.MenuItemClearBrowsingRecord.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemClearBrowsingRecord.Size = new System.Drawing.Size(263, 22);
             this.MenuItemClearBrowsingRecord.Text = "清空浏览记录";
             this.MenuItemClearBrowsingRecord.Click += new System.EventHandler(this.MenuItemClearBrowsingRecord_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(314, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(260, 6);
             // 
             // MenuItemAbout
             // 
             this.MenuItemAbout.Name = "MenuItemAbout";
-            this.MenuItemAbout.Size = new System.Drawing.Size(317, 26);
+            this.MenuItemAbout.Size = new System.Drawing.Size(263, 22);
             this.MenuItemAbout.Text = "关于";
             this.MenuItemAbout.Click += new System.EventHandler(this.MenuItemAbout_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1272, 693);
+            this.ClientSize = new System.Drawing.Size(1008, 537);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));

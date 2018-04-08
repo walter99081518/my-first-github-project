@@ -26,6 +26,7 @@ namespace AutoScoreFiller {
         private XmlDocument xmldoc = null;  // 配置文件的Xml模型
         private XmlElement root = null;     // 配置文件的根节点
         private string tablename = null;    // 待查找表格的name属性的值
+        private string language = "zh";
         private int log = 0;
         private string embededScript =
             @"function __getInnerText(id) {
@@ -94,10 +95,28 @@ namespace AutoScoreFiller {
         public MainForm() {
             InitializeComponent();
             try {
-                xmldoc = new XmlDocument();
-                msgbox = new MessageForm(this);
-                aboutform = new AboutForm(this);
+                this.xmldoc = new XmlDocument();
                 ParseConfigXml();
+
+                if (this.language.Equals("en")) {
+                    ResourceCulture.SetCurrentCulture("en-US");
+                }
+                else {
+                    ResourceCulture.SetCurrentCulture("zh-CN");
+                }
+
+                this.Text = ResourceCulture.GetString("MAINFORM_TITLE");
+                this.MenuItemTool.Text = ResourceCulture.GetString("MENU_TOOL");
+                this.MenuItemImportFromCsv.Text = ResourceCulture.GetString("MENU_TOOL_IMPORT_FROM_CSV");
+                this.MenuItemExportToCsv.Text = ResourceCulture.GetString("MENU_TOOL_EXPORT_TO_CSV");
+                this.MenuItemClearBrowsingRecord.Text = ResourceCulture.GetString("MENU_TOOL_CLEAR_BROWSING_RECORD");
+                this.MenuItemAbout.Text = ResourceCulture.GetString("MENU_TOOL_ABOUT");
+                this.btnPrevious.Text = ResourceCulture.GetString("BUTTON_TEXT_BACK");
+                this.btnNext.Text = ResourceCulture.GetString("BUTTON_TEXT_FRONT");
+                this.btnClearTable.Text = ResourceCulture.GetString("BUTTON_TEXT_CLEAR");
+                this.msgbox = new MessageForm(this);
+                this.aboutform = new AboutForm(this);
+
                 if (this.log != 0) {
                     thr = new WriteLogThread();
                     WriteLogThread.EmitMessage += new EmitCustomizedMessage(ReceiveMessage);
@@ -106,12 +125,13 @@ namespace AutoScoreFiller {
             }
             catch (Exception ex) {
                 if (thr != null) thr.Append(ex.StackTrace);
-                msgbox.ShowMessageDialog("程序启动错误\n" + ex.Message, "警告");
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_FAILS_TO_START_APP");
+                msgbox.ShowMessageDialog(txt, "warning");
             }
         }
 
         private void ReceiveMessage(string msg) {
-            msgbox.ShowMessageDialog(msg, "错误");
+            msgbox.ShowMessageDialog(msg, "error");
             Application.Exit();
         }
 
@@ -144,6 +164,9 @@ namespace AutoScoreFiller {
                 }
             }
 
+            XmlNode lang = root.SelectSingleNode("language");
+            this.language = lang.InnerText.ToLower();
+
             XmlNode log = root.SelectSingleNode("log");
             this.log = int.Parse(log.InnerText);
         }
@@ -161,7 +184,8 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("加载网页时发生错误", "错误");
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_FAILS_TO_LOAD_WEB_PAGE");
+                this.msgbox.ShowMessageDialog(txt, "error");
                 if (thr != null) thr.Append(ex.StackTrace);
             }
         }
@@ -304,19 +328,32 @@ namespace AutoScoreFiller {
         }
 
         private void MenuItemAbout_Click(object sender, EventArgs e) {
-            this.aboutform.ShowDialog();
+            this.aboutform.ShowAboutDialog();
         }
 
         private void MenuItemImportFromCsv_Click(object sender, EventArgs e) {
             try {
-                HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
+                HtmlElement table = null;
+                try {
+                    table = this.webBrowser.Document.GetElementById(this.tablename);
+                    if (table == null) {
+                        throw new Exception();
+                    }
+                }
+                catch (System.Exception ex) {
+                    string fmt = ResourceCulture.GetString("MSGBOX_TXT_TABLE_NOT_FOUND");
+                    string txt = string.Format(fmt, this.tablename);
+                    this.msgbox.ShowMessageDialog(txt, "error");
+                    if (thr != null) thr.Append(ex.StackTrace);
+                    return;
+                }
 
                 OpenFileDialog ofdlg = new OpenFileDialog();
                 ofdlg.InitialDirectory = this.initdir;
                 ofdlg.Filter = "csv file|*.csv";
                 ofdlg.RestoreDirectory = false;
                 ofdlg.FilterIndex = 1;
-                ofdlg.Title = "打开数据源";
+                ofdlg.Title = ResourceCulture.GetString("MENU_TOOL_IMPORT_FROM_CSV");
                 if (ofdlg.ShowDialog() != DialogResult.OK) {
                     return;
                 }
@@ -402,21 +439,35 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("导入数据失败", "错误");
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_IMPORT_FAIL");
+                this.msgbox.ShowMessageDialog(txt, "error");
                 if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
         private void MenuItemExportToCsv_Click(object sender, EventArgs e) {
             try {
-                HtmlElement table = this.webBrowser.Document.GetElementById(this.tablename);
+                HtmlElement table = null;
+                try {
+                    table = this.webBrowser.Document.GetElementById(this.tablename);
+                    if (table == null) {
+                        throw new Exception();
+                    }
+                }
+                catch (System.Exception ex) {
+                    string fmt = ResourceCulture.GetString("MSGBOX_TXT_TABLE_NOT_FOUND");
+                    string txt = string.Format(fmt, this.tablename);
+                    this.msgbox.ShowMessageDialog(txt, "error");
+                    if (thr != null) thr.Append(ex.StackTrace);
+                    return;
+                }
 
                 SaveFileDialog dlg = new SaveFileDialog();
                 dlg.InitialDirectory = this.initdir;
                 dlg.Filter = "csv file|*.csv";
                 dlg.RestoreDirectory = false;
                 dlg.FilterIndex = 1;
-                dlg.Title = "导出网页数据";
+                dlg.Title = ResourceCulture.GetString("MENU_TOOL_EXPORT_TO_CSV");
                 if (dlg.ShowDialog() != DialogResult.OK) {
                     return;
                 }
@@ -475,14 +526,16 @@ namespace AutoScoreFiller {
                 csv.CloseCsvFile();
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("导出CSV文件失败", "错误");
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_EXPORT_FAIL");
+                this.msgbox.ShowMessageDialog(txt, "error");
                 if (thr != null) thr.Append(ex.StackTrace);
             }
         }
 
         private void MenuItemClearBrowsingRecord_Click(object sender, EventArgs e) {
             try {
-                this.msgbox.ShowMessageDialog("确定要删除浏览记录吗？", "确认", true);
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_CONFIRM_DELETE_BROWSING_RECORD");
+                this.msgbox.ShowMessageDialog(txt, "confirm", true);
                 if (this.msgbox.Confirm()) {
                     if (IsNodeIsExist("./config.xml", "favorites") && IsNodeIsExist("./config.xml", "url")) {
                         XmlNode favorites = this.root.SelectSingleNode("favorites");
@@ -493,7 +546,8 @@ namespace AutoScoreFiller {
                 }
             }
             catch (System.Exception ex) {
-                this.msgbox.ShowMessageDialog("清空浏览记录失败", "错误");
+                string txt = ResourceCulture.GetString("MSGBOX_TXT_CLEAR_BROWSING_DATA_FAIL");
+                this.msgbox.ShowMessageDialog(txt, "error");
                 if (thr != null) thr.Append(ex.StackTrace);
             }
         }

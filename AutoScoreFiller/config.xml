@@ -1,8 +1,7 @@
 <config>
   <table>DataGrid1</table>
   <favorites>
-    <url>www.sohu.com</url>
-    <url>www.163.com</url>
   </favorites>
-  <log>1</log>
+  <language>en</language>
+  <log>0</log>
 </config>
